@@ -24,5 +24,4 @@ def parse_pdf(path: str) -> list[Sentence]:
                     clean_sentence = sentence.replace('\n', ' ').strip()
                     pdf_sentences.append(Sentence(page_num=i,text=clean_sentence))
 
-
     return pdf_sentences

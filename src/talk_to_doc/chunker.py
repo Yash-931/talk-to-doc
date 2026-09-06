@@ -10,7 +10,7 @@ def tokenize_sentences(pdf_sentences: list[Sentence]):
         sentence.tokens = len(sentence_tokens)
 
 
-def create_chunks(pdf_sentences: list[Sentence], chunk_size: int, overlap: int):
+def create_chunks(pdf_sentences: list[Sentence], chunk_size: int = 500, overlap: int = 50):
     curr_tokens = 0
     chunks = []
     current_chunk: list[Sentence] = []
@@ -40,11 +40,4 @@ def create_chunks(pdf_sentences: list[Sentence], chunk_size: int, overlap: int):
 
     if len(current_chunk) > 0:
         chunks.append(current_chunk)
-
-    print(chunks)
     return chunks
-
-
-if __name__ == "__main__":
-    parsed_sentences = parse_pdf("ai-product-engineer-guide.pdf")
-    create_chunks(parsed_sentences, 500, 50)
