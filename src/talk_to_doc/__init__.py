@@ -12,7 +12,13 @@ def rag_ingestion(path: str, chunk_size: int, overlap: int):
 
     embedding_collection: EmbeddingCollection = generate_embeddings(chunks)
 
-    store_embeddings(embeddings=embedding_collection.embeddings, chunk_texts=embedding_collection.chunk_texts, metadata=embedding_collection.metadata)
+    store_embeddings(
+        embeddings=embedding_collection.embeddings,
+        chunk_texts=embedding_collection.chunk_texts,
+        metadata=embedding_collection.metadata,
+    )
+    return
+
 
 def rag_retrieval(query: str):
     query_vector = generate_query_embedding(query)
@@ -21,11 +27,9 @@ def rag_retrieval(query: str):
 
     response = generate_llm_response(query, results)
 
-    print(response.text)
+    return response
 
 
-
-if __name__ == "__main__":
-    # rag_ingestion("ai-product-engineer-guide.pdf", 500, 10)
-
-    rag_retrieval("What needs to be done in phase 2")
+def rag_pipeline(path: str, chunk_size: int, overlap: int, query: str):
+    response = rag_retrieval(query)
+    return response.text

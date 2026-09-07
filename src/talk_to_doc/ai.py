@@ -2,12 +2,16 @@ from google import genai
 import os
 from dotenv import load_dotenv
 from chromadb.api import types as chroma_types
+from google.genai import chats
+
 
 load_dotenv()
 
 client = genai.Client(
     vertexai=True, project=os.getenv("GCP_PROJECT"), location="us-central1"
 )
+
+chat = client.chats.create(model="gemini-2.5-flash")
 
 
 def generate_llm_response(query: str, query_result: chroma_types.QueryResult):
@@ -23,7 +27,7 @@ def generate_llm_response(query: str, query_result: chroma_types.QueryResult):
     context = "\n\n".join(context_parts)
 
     prompt = f"""
-Answer the user's question using the provided context. Only use this information and if you cannot answer the query based on this, say I can't answer instead of guessing
+Answer the user's question using the provided context. Only use this information and if you cannot answer the query based on this, say I can't answer instead of guessing. Also along with the response give the citations as well (like page number etc.) of the information you used
 
 Context:
 {context}
@@ -31,8 +35,8 @@ Context:
 User question:
 {query}"""
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash", contents=[prompt]
+    response = chat.send_message(
+        message=prompt,
     )
 
-    return response
+    return response.candidates[0].content.parts[0]

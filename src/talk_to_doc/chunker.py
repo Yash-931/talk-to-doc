@@ -10,7 +10,7 @@ def tokenize_sentences(pdf_sentences: list[Sentence]):
         sentence.tokens = len(sentence_tokens)
 
 
-def create_chunks(pdf_sentences: list[Sentence], chunk_size: int = 500, overlap: int = 50):
+def create_chunks(pdf_sentences: list[Sentence], chunk_size: int = 100, overlap: int = 10):
     curr_tokens = 0
     chunks = []
     current_chunk: list[Sentence] = []
@@ -40,4 +40,5 @@ def create_chunks(pdf_sentences: list[Sentence], chunk_size: int = 500, overlap:
 
     if len(current_chunk) > 0:
         chunks.append(current_chunk)
+
     return chunks

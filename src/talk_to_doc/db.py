@@ -11,7 +11,6 @@ def store_embeddings(
     chunk_texts: list[str],
     metadata: list[chroma_types.Metadata],
 ):
-    print("Storing embedding in db...")
     collection.add(
         ids=[f"chunk_{i}" for i in range(len(chunk_texts))],
         documents=chunk_texts,
@@ -43,5 +42,5 @@ def get_db_data():
 
 
 def query_db(query_embedding: list[float]):
-    results = collection.query(query_embeddings=query_embedding, n_results=1)
+    results = collection.query(query_embeddings=query_embedding, n_results=3)
     return results
