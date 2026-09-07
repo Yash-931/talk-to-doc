@@ -15,11 +15,12 @@ class EmbeddingCollection(BaseModel):
     metadata: list[chroma_types.Metadata]
 
 
-def generate_embeddings(chunks: list[list[Sentence]]):
-    client = genai.Client(
-        vertexai=True, project=os.getenv("GCP_PROJECT"), location="us-central1"
-    )
+client = genai.Client(
+    vertexai=True, project=os.getenv("GCP_PROJECT"), location="us-central1"
+)
 
+
+def generate_embeddings(chunks: list[list[Sentence]]):
     chunk_texts: list[str] = []
     metadata = []
 
@@ -42,3 +43,14 @@ def generate_embeddings(chunks: list[list[Sentence]]):
     return EmbeddingCollection(
         embeddings=embeddings, chunk_texts=chunk_texts, metadata=metadata
     )
+
+
+def generate_query_embedding(query: str):
+    response = client.models.embed_content(
+        model="gemini-embedding-001",
+        contents=query,
+        config=genai_types.EmbedContentConfig(task_type="RETRIEVAL_QUERY"),
+    )
+
+    embedded_query = response.embeddings[0].values
+    return embedded_query
