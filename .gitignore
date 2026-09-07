@@ -12,3 +12,4 @@ gcp-key.json
 *.pdf
 
 chroma_db
+.env
