@@ -5,6 +5,7 @@ from .db import store_embeddings, query_db
 from .ai import generate_llm_response
 
 
+# TODOS: Implement the hybrid search (BM25 + semantic search)
 def rag_ingestion(path: str, chunk_size: int, overlap: int):
     sentences: list[Sentence] = parse_pdf(path)
 
