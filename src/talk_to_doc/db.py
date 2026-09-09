@@ -1,5 +1,6 @@
 import chromadb
 from chromadb import types as chroma_types
+from rank_bm25 import BM25Okapi
 
 client = chromadb.PersistentClient(path="./chroma_db")
 
@@ -44,3 +45,15 @@ def get_db_data():
 def query_db(query_embedding: list[float]):
     results = collection.query(query_embeddings=query_embedding, n_results=3)
     return results
+
+def index_bm25(chunk_texts: list[str]):
+    tokenized_chunks = [chunk.lower().split() for chunk in chunk_texts]
+
+    bm25 = BM25Okapi(tokenized_chunks)
+
+    return bm25
+
+def hybrid_search(semantic_results, bm25_results):
+    
+
+    

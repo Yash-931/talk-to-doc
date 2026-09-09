@@ -1,36 +1,44 @@
 from .data_loader import parse_pdf, Sentence
 from .chunker import create_chunks
 from .embedder import generate_embeddings, EmbeddingCollection, generate_query_embedding
-from .db import store_embeddings, query_db
+from .db import store_embeddings, query_db, index_bm25, hybrid_search
 from .ai import generate_llm_response
 
 
 # TODOS: Implement the hybrid search (BM25 + semantic search)
-def rag_ingestion(path: str, chunk_size: int, overlap: int):
-    sentences: list[Sentence] = parse_pdf(path)
+class RAG:
 
-    chunks = create_chunks(sentences, chunk_size, overlap)
+    def __init__(self):
+        self.bm25_index = None
 
-    embedding_collection: EmbeddingCollection = generate_embeddings(chunks)
+    def ingest(self, path, chunk_size, overlap):
 
-    store_embeddings(
-        embeddings=embedding_collection.embeddings,
-        chunk_texts=embedding_collection.chunk_texts,
-        metadata=embedding_collection.metadata,
-    )
-    return
+        sentences = parse_pdf(path)
+        chunks = create_chunks(sentences, chunk_size, overlap)
 
+        embedding_collection: EmbeddingCollection = generate_embeddings(chunks)
 
-def rag_retrieval(query: str):
-    query_vector = generate_query_embedding(query)
+        store_embeddings(
+            embeddings=embedding_collection.embeddings,
+            chunk_texts=embedding_collection.chunk_texts,
+            metadata=embedding_collection.metadata,
+        )
 
-    results = query_db(query_vector)
+        self.bm25_index = index_bm25(embedding_collection.chunk_texts)
 
-    response = generate_llm_response(query, results)
+    def retrieve(self, query: str):
 
-    return response
+        query_vector = generate_query_embedding(query)
 
+        semantic_results = query_db(query_vector)
 
-def rag_pipeline(path: str, chunk_size: int, overlap: int, query: str):
-    response = rag_retrieval(query)
-    return response.text
+        tokenized_query = query.lower().split()
+        bm25_results = self.bm25_index.get_scores(tokenized_query)
+
+        return hybrid_search(semantic_results, bm25_results)
+
+    def ask(self, query):
+
+        results = self.retrieve(query)
+
+        return generate_llm_response(query, results)
