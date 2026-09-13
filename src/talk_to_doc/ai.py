@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from chromadb.api import types as chroma_types
 from google.genai import chats
 
-
 load_dotenv()
 
 client = genai.Client(
@@ -22,7 +21,7 @@ def generate_llm_response(query: str, query_result: chroma_types.QueryResult):
     context_parts = []
 
     for document, metadata in zip(documents, metadatas):
-        context_parts.append(f"Page(s): {metadata["page_nums"]}\n" f"{document}")
+        context_parts.append(f"Page(s): {metadata['page_nums']}\n{document}")
 
     context = "\n\n".join(context_parts)
 

@@ -1,16 +1,23 @@
-from . import rag_pipeline
+from . import RAG
+from pathlib import Path
+
+PDF_PATH = Path(__file__).resolve().parents[2] / "ai-product-engineer-guide.pdf"
+
 
 def get_user_answer():
-    while(True):
+    rag = RAG()
+    rag.ingest(str(PDF_PATH), chunk_size=50, overlap=5)
+
+    while True:
         user_input = input("User: ")
 
         if user_input == "/exit":
             break
 
-        response = rag_pipeline(path="ai-product-engineer-guide.pdf", chunk_size=100, overlap=10, query=user_input)
+        response = rag.ask(user_input)
         print("Agent: ", end="")
-        print((response or "").strip())
+        print(response.text or "")
+
 
 if __name__ == "__main__":
     get_user_answer()
-
